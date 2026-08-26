@@ -15,5 +15,5 @@ Static placeholder for **print8.mk** on the personal/old Vercel account while th
 - `logo.svg` / `logo-mark.svg` — brand
 - `vercel.json` — static hosting hints
 
-Phone: +389 74 609 906  
+Phone: +389 74 606 906  
 Instagram / Facebook: print8.mk
