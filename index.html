@@ -1,296 +1,405 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="mk">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Print 8 — персонализиран печат. Наскоро онлајн." />
-  <meta name="theme-color" content="#e8f2f8" />
-  <title>Print 8 — Наскоро</title>
-  <link rel="icon" href="logo-mark.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --brand: #2f7cb2;
-      --brand-deep: #1c435f;
-      --ink: #0f172a;
-      --muted: #475569;
-      --soft: #64748b;
-      --line: rgba(15, 23, 42, 0.1);
-      --surface: rgba(255, 255, 255, 0.55);
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-    }
-
-    body {
-      font-family: Outfit, system-ui, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(ellipse 90% 70% at 15% -10%, rgba(47, 124, 178, 0.22), transparent 55%),
-        radial-gradient(ellipse 70% 55% at 95% 15%, rgba(28, 67, 95, 0.12), transparent 50%),
-        linear-gradient(165deg, #f4f8fb 0%, #e8f2f8 42%, #f7fafc 100%);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .grain {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      opacity: 0.035;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      z-index: 0;
-    }
-
-    .page {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      width: min(100%, 42rem);
-      margin: 0 auto;
-      padding: clamp(1.5rem, 5vw, 2.75rem);
-    }
-
-    .hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 0;
-      padding: clamp(1rem, 4vh, 2.5rem) 0;
-    }
-
-    .logo {
-      width: min(100%, 17.5rem);
-      height: auto;
-      display: block;
-      opacity: 0;
-      transform: translateY(12px);
-      animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-    }
-
-    .badge {
-      margin-top: 1.75rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--brand-deep);
-      opacity: 0;
-      transform: translateY(12px);
-      animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.18s forwards;
-    }
-
-    .badge::before {
-      content: "";
-      width: 0.45rem;
-      height: 0.45rem;
-      border-radius: 50%;
-      background: var(--brand);
-      box-shadow: 0 0 0 0 rgba(47, 124, 178, 0.55);
-      animation: pulse 2.2s ease-out infinite;
-    }
-
-    h1 {
-      margin: 0.85rem 0 0;
-      font-family: Fraunces, Georgia, serif;
-      font-weight: 650;
-      font-size: clamp(2.35rem, 8vw, 3.65rem);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      max-width: 11ch;
-      opacity: 0;
-      transform: translateY(14px);
-      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
-    }
-
-    .lead {
-      margin: 1.1rem 0 0;
-      font-size: clamp(1.05rem, 2.6vw, 1.2rem);
-      line-height: 1.55;
-      color: var(--muted);
-      max-width: 32ch;
-      font-weight: 450;
-      opacity: 0;
-      transform: translateY(14px);
-      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
-    }
-
-    .actions {
-      margin-top: 2.25rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.85rem 1.25rem;
-      opacity: 0;
-      transform: translateY(14px);
-      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.52s forwards;
-    }
-
-    .phone {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.9rem 1.25rem;
-      border-radius: 999px;
-      background: var(--brand-deep);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1.05rem;
-      letter-spacing: 0.01em;
-      box-shadow: 0 12px 28px rgba(28, 67, 95, 0.22);
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .phone:hover {
-      background: #16324a;
-      transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(28, 67, 95, 0.28);
-    }
-
-    .phone:active { transform: translateY(0); }
-
-    .phone svg {
-      width: 1.15rem;
-      height: 1.15rem;
-      flex-shrink: 0;
-    }
-
-    .hint {
-      font-size: 0.92rem;
-      color: var(--soft);
-    }
-
-    .socials {
-      margin-top: 2.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      opacity: 0;
-      transform: translateY(14px);
-      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.64s forwards;
-    }
-
-    .social {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 0.95rem;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      backdrop-filter: blur(8px);
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 550;
-      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-    }
-
-    .social:hover {
-      border-color: rgba(47, 124, 178, 0.45);
-      background: rgba(255, 255, 255, 0.85);
-      transform: translateY(-1px);
-    }
-
-    .social svg {
-      width: 1.05rem;
-      height: 1.05rem;
-      color: var(--brand);
-    }
-
-    footer {
-      padding: 1.25rem 0 0.25rem;
-      border-top: 1px solid var(--line);
-      font-size: 0.82rem;
-      color: var(--soft);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem 1rem;
-      justify-content: space-between;
-      opacity: 0;
-      animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
-    }
-
-    @keyframes rise {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(47, 124, 178, 0.5); }
-      70% { box-shadow: 0 0 0 10px rgba(47, 124, 178, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(47, 124, 178, 0); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .logo, .badge, h1, .lead, .actions, .socials, footer,
-      .badge::before {
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta
+      name="description"
+      content="Print 8 — персонализиран печат. Наскоро онлајн."
+    />
+    <meta
+      name="theme-color"
+      content="#e8f2f8"
+    />
+    <title>Print 8 — Наскоро</title>
+    <link
+      rel="icon"
+      href="logo-mark.svg"
+      type="image/svg+xml"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --brand: #2f7cb2;
+        --brand-deep: #1c435f;
+        --ink: #0f172a;
+        --muted: #475569;
+        --soft: #64748b;
+        --line: rgba(15, 23, 42, 0.1);
+        --surface: rgba(255, 255, 255, 0.55);
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="grain" aria-hidden="true"></div>
-  <main class="page">
-    <div class="hero">
-      <img class="logo" src="logo.svg" width="280" height="76" alt="Print 8" />
 
-      <p class="badge">Наскоро онлајн</p>
-      <h1>Печатиме за вас</h1>
-      <p class="lead">
-        Персонализирани маици, шолји и повеќе. Сајтот се подготвува — јавете ни се за нарачки веднаш.
-      </p>
+      * {
+        box-sizing: border-box;
+      }
 
-      <div class="actions">
-        <a class="phone" href="tel:+38974609906">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
-          </svg>
-          +389 74 609 906
-        </a>
-        <span class="hint">Работни денови · јавете се или пишете на социјални</span>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: Outfit, system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            ellipse 90% 70% at 15% -10%,
+            rgba(47, 124, 178, 0.22),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 70% 55% at 95% 15%,
+            rgba(28, 67, 95, 0.12),
+            transparent 50%
+          ),
+          linear-gradient(165deg, #f4f8fb 0%, #e8f2f8 42%, #f7fafc 100%);
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .grain {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        z-index: 0;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        width: min(100%, 42rem);
+        margin: 0 auto;
+        padding: clamp(1.5rem, 5vw, 2.75rem);
+      }
+
+      .hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0;
+        padding: clamp(1rem, 4vh, 2.5rem) 0;
+      }
+
+      .logo {
+        width: min(100%, 17.5rem);
+        height: auto;
+        display: block;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+      }
+
+      .badge {
+        margin-top: 1.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--brand-deep);
+        opacity: 0;
+        transform: translateY(12px);
+        animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.18s forwards;
+      }
+
+      .badge::before {
+        content: '';
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 50%;
+        background: var(--brand);
+        box-shadow: 0 0 0 0 rgba(47, 124, 178, 0.55);
+        animation: pulse 2.2s ease-out infinite;
+      }
+
+      h1 {
+        margin: 0.85rem 0 0;
+        font-family: Fraunces, Georgia, serif;
+        font-weight: 650;
+        font-size: clamp(2.35rem, 8vw, 3.65rem);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        max-width: 11ch;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+      }
+
+      .lead {
+        margin: 1.1rem 0 0;
+        font-size: clamp(1.05rem, 2.6vw, 1.2rem);
+        line-height: 1.55;
+        color: var(--muted);
+        max-width: 32ch;
+        font-weight: 450;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+      }
+
+      .actions {
+        margin-top: 2.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.85rem 1.25rem;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.52s forwards;
+      }
+
+      .phone {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.9rem 1.25rem;
+        border-radius: 999px;
+        background: var(--brand-deep);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+        box-shadow: 0 12px 28px rgba(28, 67, 95, 0.22);
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .phone:hover {
+        background: #16324a;
+        transform: translateY(-1px);
+        box-shadow: 0 16px 32px rgba(28, 67, 95, 0.28);
+      }
+
+      .phone:active {
+        transform: translateY(0);
+      }
+
+      .phone svg {
+        width: 1.15rem;
+        height: 1.15rem;
+        flex-shrink: 0;
+      }
+
+      .hint {
+        font-size: 0.92rem;
+        color: var(--soft);
+      }
+
+      .socials {
+        margin-top: 2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.64s forwards;
+      }
+
+      .social {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        backdrop-filter: blur(8px);
+        color: var(--ink);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 550;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .social:hover {
+        border-color: rgba(47, 124, 178, 0.45);
+        background: rgba(255, 255, 255, 0.85);
+        transform: translateY(-1px);
+      }
+
+      .social svg {
+        width: 1.05rem;
+        height: 1.05rem;
+        color: var(--brand);
+      }
+
+      footer {
+        padding: 1.25rem 0 0.25rem;
+        border-top: 1px solid var(--line);
+        font-size: 0.82rem;
+        color: var(--soft);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 1rem;
+        justify-content: space-between;
+        opacity: 0;
+        animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(47, 124, 178, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(47, 124, 178, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(47, 124, 178, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .logo,
+        .badge,
+        h1,
+        .lead,
+        .actions,
+        .socials,
+        footer,
+        .badge::before {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="grain"
+      aria-hidden="true"
+    ></div>
+    <main class="page">
+      <div class="hero">
+        <img
+          class="logo"
+          src="logo.svg"
+          width="280"
+          height="76"
+          alt="Print 8"
+        />
+
+        <p class="badge">Наскоро онлајн</p>
+        <h1>Печатиме за вас</h1>
+        <p class="lead">
+          Персонализирани маици, шолји и повеќе. Сајтот се подготвува — јавете
+          ни се за нарачки веднаш.
+        </p>
+
+        <div class="actions">
+          <a
+            class="phone"
+            href="tel:+38974606906"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+            +389 74 609 906
+          </a>
+          <span class="hint"
+            >Работни денови · јавете се или пишете на социјални</span
+          >
+        </div>
+
+        <nav
+          class="socials"
+          aria-label="Социјални мрежи"
+        >
+          <a
+            class="social"
+            href="https://www.instagram.com/print8.mk/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.1.4-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.1-.4-2.3C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.1-.4 2.3-.4C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 0.1 5.7.1 4.8.3 4 .6c-.9.3-1.6.8-2.3 1.5C1 2.9.6 3.6.3 4.5.1 5.3-.1 6.2 0 7.5 0 8.8 0 9.2 0 12s0 3.2.1 4.5c.1 1.3.3 2.2.5 3 .3.9.8 1.6 1.5 2.3.7.7 1.4 1.1 2.3 1.5.8.3 1.7.5 3 .6C8.3 24 8.7 24 12 24s3.2 0 4.5-.1c1.3-.1 2.2-.3 3-.6.9-.3 1.6-.8 2.3-1.5.7-.7 1.1-1.4 1.5-2.3.3-.8.5-1.7.6-3 .1-1.3.1-1.7.1-4.5s0-3.2-.1-4.5c-.1-1.3-.3-2.2-.6-3-.3-.9-.8-1.6-1.5-2.3C20.1 1.4 19.4 1 18.5.6c-.8-.3-1.7-.5-3-.6C15.2 0 14.8 0 12 0z"
+              />
+              <path
+                d="M12 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 1 0 12 5.8zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-10.5a1.4 1.4 0 1 1-2.9 0 1.4 1.4 0 0 1 2.9 0z"
+              />
+            </svg>
+            Instagram
+          </a>
+          <a
+            class="social"
+            href="https://www.facebook.com/print8.mk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.5 3.5h-2.9V24C19.6 23.1 24 18.1 24 12.1z"
+              />
+            </svg>
+            Facebook
+          </a>
+        </nav>
       </div>
 
-      <nav class="socials" aria-label="Социјални мрежи">
-        <a class="social" href="https://www.instagram.com/print8.mk/" target="_blank" rel="noopener noreferrer">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.1.4-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.1-.4-2.3C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.1-.4 2.3-.4C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 0.1 5.7.1 4.8.3 4 .6c-.9.3-1.6.8-2.3 1.5C1 2.9.6 3.6.3 4.5.1 5.3-.1 6.2 0 7.5 0 8.8 0 9.2 0 12s0 3.2.1 4.5c.1 1.3.3 2.2.5 3 .3.9.8 1.6 1.5 2.3.7.7 1.4 1.1 2.3 1.5.8.3 1.7.5 3 .6C8.3 24 8.7 24 12 24s3.2 0 4.5-.1c1.3-.1 2.2-.3 3-.6.9-.3 1.6-.8 2.3-1.5.7-.7 1.1-1.4 1.5-2.3.3-.8.5-1.7.6-3 .1-1.3.1-1.7.1-4.5s0-3.2-.1-4.5c-.1-1.3-.3-2.2-.6-3-.3-.9-.8-1.6-1.5-2.3C20.1 1.4 19.4 1 18.5.6c-.8-.3-1.7-.5-3-.6C15.2 0 14.8 0 12 0z"/>
-            <path d="M12 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 1 0 12 5.8zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-10.5a1.4 1.4 0 1 1-2.9 0 1.4 1.4 0 0 1 2.9 0z"/>
-          </svg>
-          Instagram
-        </a>
-        <a class="social" href="https://www.facebook.com/print8.mk" target="_blank" rel="noopener noreferrer">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.5 3.5h-2.9V24C19.6 23.1 24 18.1 24 12.1z"/>
-          </svg>
-          Facebook
-        </a>
-      </nav>
-    </div>
-
-    <footer>
-      <span>© Print 8 · print8.mk</span>
-      <span>Штип, Северна Македонија</span>
-    </footer>
-  </main>
-</body>
+      <footer>
+        <span>© Print 8 · print8.mk</span>
+        <span>Штип, Северна Македонија</span>
+      </footer>
+    </main>
+  </body>
 </html>
